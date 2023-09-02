@@ -1,0 +1,5 @@
+deployment
+.git
+.vscode
+__pycache__
+vom-api.tar

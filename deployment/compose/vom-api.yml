@@ -1,0 +1,28 @@
+  
+version: "3.3"
+
+services:
+  vom-api:
+    image: vom-api:latest
+    restart: unless-stopped
+    container_name: vom-api
+    environment:
+      - "MODEL_FOLDER_PATH=/models"
+    networks:
+      - vom
+    labels:
+      #### Labels define the behavior and rules of the traefik proxy for this container ####
+      - "traefik.enable=true" # <== Enable traefik to proxy this container
+      - "traefik.http.routers.vom-api.rule=Host(`voiceover.market`) && PathPrefix(`/api/`)" # <== Your Domain Name goes here for the http rule
+      - "traefik.http.routers.vom-api.entrypoints=web" # <== Defining the entrypoint for http, **ref: line 30
+      - "traefik.http.routers.vom-api-secured.rule=Host(`voiceover.market`) && PathPrefix(`/api/`)" # <== Your Domain Name for the https rule 
+      - "traefik.http.routers.vom-api-secured.entrypoints=web-secured" # <== Defining entrypoint for https, **ref: line 31
+      - "traefik.http.routers.vom-api-secured.tls.certresolver=mytlschallenge" # <== Defining certsresolvers for https
+    depends_on:
+      - traefik
+    volumes:
+      - ./models:/models
+
+networks:
+  vom:
+    external: true
